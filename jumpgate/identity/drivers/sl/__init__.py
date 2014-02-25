@@ -3,12 +3,20 @@ import os.path
 from .tenants import TenantsV2
 from .tokens import TokensV2, TokenV2
 from .versions import Versions
+from .v3 import V3
+from .servicesV3 import ServicesV3
+from .authTokensV3 import AuthTokensV3
+from .userProjectsV3 import UserProjectsV3
 from jumpgate.common.sl import add_hooks
 
 
 def setup_routes(app, disp):
     # V3 Routes
-    # None currently supported
+    # 
+    disp.set_handler('v3_auth_index',V3(disp))
+    disp.set_handler('v3_user_projects', UserProjectsV3())
+    
+    
 
     # V2 Routes
     disp.set_handler('v2_tenants', TenantsV2())
@@ -23,5 +31,11 @@ def setup_routes(app, disp):
         raise ValueError('Template file not found')
 
     disp.set_handler('v2_tokens', TokensV2(template_file))
+    
+    #V3 auth token route
+    disp.set_handler('v3_auth_tokens',AuthTokensV3(template_file))
+    
+    #V3 service
+    disp.set_handler('v3_services',ServicesV3(template_file))
 
     add_hooks(app)
