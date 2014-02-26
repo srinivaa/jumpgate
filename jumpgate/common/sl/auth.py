@@ -67,7 +67,7 @@ def get_new_token(credentials):
 def get_new_token_v3(credentials):
     
     credential = lookup(credentials, 'auth', 'identity', 'password','user','password')
-    username = lookup(credentials, 'auth', 'identity','password','user','id')
+    username = lookup(credentials, 'auth', 'identity','password','user','name')
     
     def assert_tenant(user):
         tenant = lookup(credentials, 'auth', 'tenantId')

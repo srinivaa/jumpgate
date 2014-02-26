@@ -29,13 +29,21 @@ def setup_routes(app, disp):
 
     if template_file is None:
         raise ValueError('Template file not found')
+    
+    template_file_v3 = app.config.softlayer.catalog_template_file_v3
+    if not os.path.exists(template_file_v3):
+        template_file_v3 = app.config.find_file(template_file_v3)
+
+    if template_file_v3 is None:
+        raise ValueError('Template file v3 not found')
 
     disp.set_handler('v2_tokens', TokensV2(template_file))
     
     #V3 auth token route
-    disp.set_handler('v3_auth_tokens',AuthTokensV3(template_file))
+    
+    disp.set_handler('v3_auth_tokens',AuthTokensV3(template_file_v3))
     
     #V3 service
-    disp.set_handler('v3_services',ServicesV3(template_file))
+    disp.set_handler('v3_services',ServicesV3(template_file_v3))
 
     add_hooks(app)

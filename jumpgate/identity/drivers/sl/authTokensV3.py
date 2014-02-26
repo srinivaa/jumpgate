@@ -106,6 +106,29 @@ class AuthTokensV3(object):
         token_id = base64.b64encode(encode_aes(json.dumps(token_details)))
 
         access = get_access_v3(token_id, token_details, user)
+        
+         # Add catalog to the access data
+        raw_catalog = self._get_catalog(token_details['tenant_id'], user['id'])
+        catalog = []
+        for services in raw_catalog.values():
+            for service_type, service in services.items():
+                d = {
+                    'type': service_type,
+                    'name': service.get('name', 'Unknown'),
+                    'endpoints': [{
+                        'region': service.get('region', 'RegionOne'),
+                        'publicURL': service.get('publicURL'),
+                        'privateURL': service.get('privateURL'),
+                        'adminURL': service.get('adminURL'),
+                    }],
+                    'endpoint_links': [],
+                }
+                catalog.append(d)
+
+        access['Catalog'] = catalog
+
+        resp.status = 200
+        #resp.body = {'access': access}
 
         resp.status = 200
         resp.set_header('X-Subject-Token',str(token_id))
